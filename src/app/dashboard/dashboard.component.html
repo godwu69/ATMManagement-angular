@@ -1,0 +1,177 @@
+<div class="container">
+  <div class="sidebar" [class.collapsed]="isCollapsed">
+    <button (click)="toggleSidebar()">{{ isCollapsed ? '>' : '<' }}</button>
+    <ul>
+      <li (click)="selectSideBar('home')" class="li-menu"><img width="60" height="60"
+                                                               ngSrc="https://img.icons8.com/ios-filled/200/FFFFFF/bank-building.png"
+                                                               alt="bank-building"/></li>
+      <li (click)="selectSideBar('withdraw')"><img width="25" height="25"
+                                                   ngSrc="https://img.icons8.com/ios-filled/200/FFFFFF/request-money.png"
+                                                   alt="request-money"/><a>Withdraw</a></li>
+      <li (click)="selectSideBar('deposit')"><img width="25" height="25"
+                                                  ngSrc="https://img.icons8.com/ios-filled/200/FFFFFF/safe-in.png"
+                                                  alt="safe-in"/><a>Deposit</a></li>
+      <li (click)="selectSideBar('transfer')"><img width="25" height="25"
+                                                   ngSrc="https://img.icons8.com/external-nawicon-glyph-nawicon/200/FFFFFF/external-transfer-finance-nawicon-glyph-nawicon.png"
+                                                   alt="external-transfer-finance-nawicon-glyph-nawicon"/><a>Transfer</a>
+      </li>
+      <li (click)="selectSideBar('change-password')"><img width="25" height="25"
+                                                          ngSrc="https://img.icons8.com/ios-filled/200/FFFFFF/change.png"
+                                                          alt="change"/><a>Change Password</a></li>
+      <li (click)="logout()"><img width="25" height="25" ngSrc="https://img.icons8.com/ios-filled/200/FFFFFF/exit.png"
+                                  alt="exit"/><a>Logout</a></li>
+    </ul>
+  </div>
+
+  <div id="dashboard" *ngIf="!isLoading; else onLoading">
+    <h2>{{ greeting }}</h2>
+    <p class="text">Total Balance</p>
+    <h1>{{ '$' + (balance | number) }}</h1>
+
+    <div id="home" *ngIf="selectedPage === 'home'">
+      <h3>Recent Transactions</h3>
+      <div *ngIf="paginatedTransactions.length > 0; else noTransactions" id="transactions">
+        <ul>
+          <li *ngFor="let transaction of paginatedTransactions" class="transaction">
+            <p><strong>Date: </strong> {{ convertTimestamp(transaction.timestamp) }}</p>
+            <p><strong>Transaction Type:</strong> {{ transaction.transactionType }}</p>
+            <span
+              class="amount">{{ transaction.transactionType === 'Send' || transaction.transactionType === 'Withdraw' ? '-' : '+' }}{{ '$' + (transaction.amount | number) }}</span>
+            <span class="status"
+                  [ngClass]="transaction.isSuccessful ? 'success' : 'failed'">{{ transaction.isSuccessful ? 'Completed' : 'Failed' }}</span>
+          </li>
+        </ul>
+
+        <div class="pagination">
+          <button (click)="prevPage()" [disabled]="currentPage === 1">Previous Page</button>
+          <span>Page {{ currentPage }} of {{ totalPages }}</span>
+          <button (click)="nextPage()" [disabled]="currentPage * transactionsPerPage >= transactions.length">Next Page
+          </button>
+        </div>
+      </div>
+      <ng-template #noTransactions>
+        <p style="margin: 50px 0; font-size: 20px; color: red">No transactions available.</p>
+      </ng-template>
+    </div>
+
+    <div id="withdraw" *ngIf="selectedPage === 'withdraw'" (submit)="withdraw()">
+      <h2 class="header-text">Withdraw</h2>
+      <form id="withdraw-form">
+        <div class="input-area">
+          <input type="text" [(ngModel)]="amount" name="amount" placeholder="amount" required
+                 (input)="validateInput($event)">
+          <label>Amount</label>
+        </div>
+        <div class="input-area">
+          <input type="text" [(ngModel)]="otp" name="otp" placeholder="otp" required>
+          <label>OTP</label>
+          <span class="get-otp" (click)="sendOtp()" [class.disabled]="cooldown > 0">
+    {{ cooldown > 0 ? cooldown + 's' : 'Send' }}
+  </span>
+        </div>
+        <button type="submit" [disabled]="isBtnLoading">
+          <ng-container *ngIf="isBtnLoading; else withdrawText">
+            <div class="loading"></div>
+          </ng-container>
+          <ng-template #withdrawText>Withdraw</ng-template>
+        </button>
+      </form>
+    </div>
+
+    <div id="deposit" *ngIf="selectedPage === 'deposit'" (submit)="deposit()">
+      <h2 class="header-text">Deposit</h2>
+      <form id="deposit-from">
+        <div class="input-area">
+          <input type="text" [(ngModel)]="amount" name="amount" placeholder="amount" required
+                 (input)="validateInput($event)">
+          <label>Amount</label>
+        </div>
+        <div class="input-area">
+          <input type="text" [(ngModel)]="otp" name="otp" placeholder="otp" required>
+          <label>OTP</label>
+          <span class="get-otp" (click)="sendOtp()" [class.disabled]="cooldown > 0">
+    {{ cooldown > 0 ? cooldown + 's' : 'Send' }}
+  </span>
+        </div>
+        <button type="submit" [disabled]="isBtnLoading">
+          <ng-container *ngIf="isBtnLoading; else depositText">
+            <div class="loading"></div>
+          </ng-container>
+          <ng-template #depositText>Deposit</ng-template>
+        </button>
+      </form>
+    </div>
+
+    <div id="transfer" *ngIf="selectedPage === 'transfer'" (submit)="transfer()">
+      <h2 class="header-text">Transfer</h2>
+      <form id="transfer-form">
+        <div class="input-area">
+          <input type="text" [(ngModel)]="account_number" name="account_number" placeholder="account_number" required>
+          <label>Account Number</label>
+        </div>
+        <div class="input-area">
+          <input type="text" [(ngModel)]="amount" name="amount" placeholder="amount" required
+                 (input)="validateInput($event)">
+          <label>Amount</label>
+        </div>
+        <div class="input-area">
+          <input type="text" [(ngModel)]="otp" name="otp" placeholder="otp" required>
+          <label>OTP</label>
+          <span class="get-otp" (click)="sendOtp()" [class.disabled]="cooldown > 0">
+    {{ cooldown > 0 ? cooldown + 's' : 'Send' }}
+  </span>
+        </div>
+        <button type="submit" [disabled]="isBtnLoading">
+          <ng-container *ngIf="isBtnLoading; else transferText">
+            <div class="loading"></div>
+          </ng-container>
+          <ng-template #transferText>Confirm</ng-template>
+        </button>
+      </form>
+    </div>
+
+    <div id="change-password" *ngIf="selectedPage === 'change-password'" (submit)="change_password()">
+      <h2 class="header-text">Change Password</h2>
+      <form id="change-password-form">
+        <div class="input-area">
+          <input [type]="isShowPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+                 placeholder="password" required>
+          <label>Current Password</label>
+          <img (click)="toggleShowPassword()" *ngIf="!isShowPassword" width="20" height="20"
+               ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/invisible--v1.png" alt="invisible--v1"/>
+          <img (click)="toggleShowPassword()" *ngIf="isShowPassword" width="20" height="20"
+               ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/visible--v1.png" alt="visible--v1"/>
+        </div>
+        <div class="input-area">
+          <input [type]="isShowPassword ? 'text' : 'password'" [(ngModel)]="new_password" name="new_password"
+                 placeholder="new_password" required>
+          <label>New Password</label>
+          <img (click)="toggleShowPassword()" *ngIf="!isShowPassword" width="20" height="20"
+               ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/invisible--v1.png" alt="invisible--v1"/>
+          <img (click)="toggleShowPassword()" *ngIf="isShowPassword" width="20" height="20"
+               ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/visible--v1.png" alt="visible--v1"/>
+        </div>
+        <div class="input-area">
+          <input [type]="isShowPassword ? 'text' : 'password'" [(ngModel)]="confirm_new_password"
+                 name="confirm_new_password"
+                 placeholder="confirm_new_password" required>
+          <label>Confirm New Password</label>
+          <img (click)="toggleShowPassword()" *ngIf="!isShowPassword" width="20" height="20"
+               ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/invisible--v1.png" alt="invisible--v1"/>
+          <img (click)="toggleShowPassword()" *ngIf="isShowPassword" width="20" height="20"
+               ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/visible--v1.png" alt="visible--v1"/>
+        </div>
+        <button type="submit" [disabled]="isBtnLoading">
+          <ng-container *ngIf="isBtnLoading; else changePassText">
+            <div class="loading"></div>
+          </ng-container>
+          <ng-template #changePassText>Save Changes</ng-template>
+        </button>
+      </form>
+    </div>
+
+  </div>
+  <ng-template #onLoading>
+    <div class="loading-div"></div>
+  </ng-template>
+</div>

@@ -1,0 +1,63 @@
+<main id="login-container">
+  <form (submit)="login()" id="login-form" [class]="!isRegister ? 'show' : 'hide'">
+    <div *ngIf="message" class="alert-mess">{{message}}</div>
+    <h2>Welcome Back</h2>
+    <span>Please log in to your account</span>
+    <div class="input-area">
+      <input type="email" [(ngModel)]="email" name="email" placeholder="email" required>
+      <label>Email</label>
+    </div>
+    <div class="input-area">
+      <input [type]="isShowPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+             placeholder="password" required>
+      <label>Password</label>
+      <img (click)="toggleShowPassword()" *ngIf="!isShowPassword" width="20" height="20"
+           ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/invisible--v1.png" alt="invisible--v1"/>
+      <img (click)="toggleShowPassword()" *ngIf="isShowPassword" width="20" height="20"
+           ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/visible--v1.png" alt="visible--v1"/>
+    </div>
+    <button type="submit" [disabled]="isLoading">
+      <ng-container *ngIf="isLoading; else loginText">
+        <div class="loading"></div>
+      </ng-container>
+      <ng-template #loginText>Log in</ng-template>
+    </button>
+  </form>
+  <div (click)="toggleRegister()" class="toggle-btn" *ngIf="!isRegister"><img width="20" height="20"
+                                                                              ngSrc="https://img.icons8.com/pastel-glyph/200/000000/collapse-arrow.png"
+                                                                              alt="arrow"/>Register
+  </div>
+  <form (submit)="register()" id="register-form" [class]="isRegister ? 'show' : 'hide'">
+    <div *ngIf="message" class="alert-mess">{{message}}</div>
+    <h2>Join To Get Unlimited Money</h2>
+    <span>Please fill in the form below</span>
+    <div class="input-area">
+      <input type="text" [(ngModel)]="name" name="name" placeholder="name" required>
+      <label>Name</label>
+    </div>
+    <div class="input-area">
+      <input type="email" [(ngModel)]="email" name="email" placeholder="email" required>
+      <label>Email</label>
+    </div>
+    <div class="input-area">
+      <input [type]="isShowPassword ? 'text' : 'password'" [(ngModel)]="password" name="password"
+             placeholder="password" required>
+      <label>Password</label>
+      <img (click)="toggleShowPassword()" *ngIf="!isShowPassword" width="20" height="20"
+           ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/invisible--v1.png" alt="invisible--v1"/>
+      <img (click)="toggleShowPassword()" *ngIf="isShowPassword" width="20" height="20"
+           ngSrc="https://img.icons8.com/fluency-systems-regular/200/000000/visible--v1.png" alt="visible--v1"/>
+    </div>
+    <button type="submit" [disabled]="isLoading">
+      <ng-container *ngIf="isLoading; else registerText">
+        <div class="loading"></div>
+      </ng-container>
+      <ng-template #registerText>Register</ng-template>
+    </button>
+  </form>
+  <div (click)="toggleRegister()" class="toggle-btn" *ngIf="isRegister"><img width="20" height="20"
+                                                                             ngSrc="https://img.icons8.com/pastel-glyph/200/000000/collapse-arrow.png"
+                                                                             alt="arrow"/>Log in
+  </div>
+</main>
+
