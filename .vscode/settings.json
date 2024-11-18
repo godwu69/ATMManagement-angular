@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/e4786177-87ef-4490-9a4d-0a8b42f1fa9a/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/atm-management-angular",
+    "appService.deploySubpath": "dist"
+}

@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
 
     if (customerId) {
       this.isLoading = true;
-      this.http.get<any>(`http://localhost:5098/api/atm/balance/${customerId}`)
+      this.http.get<any>(`https://atm-management.azurewebsites.net/api/atm/balance/${customerId}`)
         .subscribe({
           next: (response) => {
             this.balance = response.balance;
@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
           }
         });
 
-      this.http.get<any>(`http://localhost:5098/api/atm/transaction/${customerId}`)
+      this.http.get<any>(`https://atm-management.azurewebsites.net/api/atm/transaction/${customerId}`)
         .subscribe({
           next: (response) => {
             this.transactions = response;
@@ -152,7 +152,7 @@ export class DashboardComponent implements OnInit {
 
     if (customerId) {
       this.isBtnLoading = true;
-      this.http.post<any>('http://localhost:5098/api/atm/withdraw', {
+      this.http.post<any>('https://atm-management.azurewebsites.net/api/atm/withdraw', {
         customerId: customerId,
         amount: this.amount,
         otp: this.otp
@@ -175,7 +175,7 @@ export class DashboardComponent implements OnInit {
 
     if (customerId) {
       this.isBtnLoading = true;
-      this.http.post<any>('http://localhost:5098/api/atm/deposit', {
+      this.http.post<any>('https://atm-management.azurewebsites.net/api/atm/deposit', {
         customerId: customerId,
         amount: this.amount,
         otp: this.otp
@@ -197,7 +197,7 @@ export class DashboardComponent implements OnInit {
     const email = localStorage.getItem('email');
     if (email) {
       this.isBtnLoading = true;
-      this.http.put<any>('http://localhost:5098/api/auth/change-password', {
+      this.http.put<any>('https://atm-management.azurewebsites.net/api/auth/change-password', {
         email: email,
         oldPassword: this.password,
         newPassword: this.new_password
@@ -220,7 +220,7 @@ export class DashboardComponent implements OnInit {
     const customerId = localStorage.getItem('customerId');
     if (customerId) {
       this.isBtnLoading = true;
-      this.http.post<any>('http://localhost:5098/api/atm/transfer', {
+      this.http.post<any>('https://atm-management.azurewebsites.net/api/atm/transfer', {
         sendId: customerId,
         receiveId: this.account_number,
         amount: this.amount,
@@ -252,7 +252,7 @@ export class DashboardComponent implements OnInit {
     const customerId = localStorage.getItem('customerId');
     if (this.cooldown === 0) {
       if (customerId){
-        this.http.post<any>('http://localhost:5098/api/atm/request-otp',{
+        this.http.post<any>('https://atm-management.azurewebsites.net/api/atm/request-otp',{
           customerId: customerId
         }).subscribe({
           next: (response) => {

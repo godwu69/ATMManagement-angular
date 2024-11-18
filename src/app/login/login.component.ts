@@ -39,7 +39,7 @@ export class LoginComponent {
       return;
     }
 
-    this.http.post<any>('http://localhost:5098/api/auth/login', {
+    this.http.post<any>('https://atm-management.azurewebsites.net/api/auth/login', {
       email: this.email,
       password: this.password
     }).subscribe({
@@ -73,7 +73,7 @@ export class LoginComponent {
       return;
     }
 
-    this.http.post<any>('http://localhost:5098/api/auth/register', {
+    this.http.post<any>('https://atm-management.azurewebsites.net/api/auth/register', {
       email: this.email,
       password: this.password,
       name: this.name,
